@@ -1,0 +1,31 @@
+version: '3.8'
+
+volumes:
+  wordpress_data:
+    driver: local
+    driver_opts: 
+      type: none
+      device: /Users/macbookpro/inception/inception/wordpress
+      o: bind
+  mariadb_data:
+    driver: local
+    driver_opts: 
+      type: none
+      device: /Users/macbookpro/inception/inception/mariadb
+      o: bind
+
+services:
+  nginx:
+    container_name: nginx
+    build: ./requirements/nginx
+    ports:
+      - 443:443
+    volumes:
+      - wordpress_data:/var/www/html
+    restart: always
+    networks:
+      - inception
+
+networks:
+  inception:
+    driver: bridge
