@@ -1,7 +1,12 @@
 #!/bin/bash
 
-sed -i "s/my_cert/$ssl_certificate/g" /etc/nginx/sites-available/default
-sed -i "s/my_key/$ssl_certificate_key/g" /etc/nginx/sites-available/default
-sed -i "s/DOMAIN_NAME/$nginx_domain/g" /etc/nginx/sites-available/default   
+echo "Generating SSL certificate and key..."
+
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+    -keyout /etc/ssl/private/ymouchta.key \
+    -out /etc/ssl/certs/ymouchta.crt \
+    -subj="/C=MA/ST=Tetouan/L=Martil/O=1337 MED School/OU=ymouchta/CN=ymouchta.42.fr"
+
+echo "SSL certificate and key generated successfully."
 
 nginx -g "daemon off;"
