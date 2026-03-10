@@ -18,26 +18,26 @@ services:
   nginx:
     container_name: nginx
     build: ./requirements/nginx
-    # depends_on:
-    #   - wordpress
+    depends_on:
+      - wordpress
     ports:
       - 443:443
-    # volumes:
-    #   - wordpress_data:/var/www/html
+    volumes:
+      - wordpress_data:/var/www/html
     restart: always
     networks:
       - inception
 
-  # wordpress:
-  #   container_name: wordpress
-  #   image: wordpress:php8.2-fpm
-  #   expose:
-  #     - "9000"
-  #   volumes:
-  #     - wordpress_data:/var/www/html
-  #   restart: always
-  #   networks:
-  #     - inception
+  wordpress:
+    container_name: wordpress
+    image: wordpress:php8.2-fpm
+    expose:
+      - "9000"
+    volumes:
+      - wordpress_data:/var/www/html
+    restart: always
+    networks:
+      - inception
 
 networks:
   inception:
