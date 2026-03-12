@@ -5,13 +5,13 @@ volumes:
     driver: local
     driver_opts: 
       type: none
-      device: /Users/macbookpro/inception/inception/wordpress
+      device: /Users/macbookpro/inception/inception/wordpress_data
       o: bind
   mariadb_data:
     driver: local
     driver_opts: 
       type: none
-      device: /Users/macbookpro/inception/inception/mariadb
+      device: /Users/macbookpro/inception/inception/mariadb_data
       o: bind
 
 services:
@@ -28,16 +28,43 @@ services:
     networks:
       - inception
 
+  mariadb:
+    container_name: mariadb
+    build: ./requirements/mariadb/.
+    # image: mariadb:42
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    secrets:
+      - db_password
+      - db_root_password
+    env_file:
+      - .env
+    networks:
+      - inception
+    restart: always
+
   wordpress:
     container_name: wordpress
-    image: wordpress:php8.2-fpm
+    build: ./requirements/wordpress
+    env_file:
+      - .env
+    depends_on:
+      - mariadb
     expose:
       - "9000"
     volumes:
       - wordpress_data:/var/www/html
+    secrets:
+      - db_password
     restart: always
     networks:
       - inception
+
+secrets:
+  db_password:
+    file: ../secrets/db_password.txt
+  db_root_password:
+    file: ../secrets/db_root_password.txt
 
 networks:
   inception:
