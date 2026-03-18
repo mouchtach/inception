@@ -20,11 +20,12 @@ services:
     build: ./requirements/nginx
     depends_on:
       - wordpress
+      - adminer
     ports:
       - 443:443
     volumes:
       - wordpress_data:/var/www/html
-    restart: always
+    restart: unless-stopped
     networks:
       - inception
 
@@ -40,7 +41,7 @@ services:
       - .env
     networks:
       - inception
-    restart: always
+    restart: unless-stopped
 
   wordpress:
     container_name: wordpress
@@ -57,9 +58,32 @@ services:
       - db_password
       - wp_password
       - wp_admin_password
-    restart: always
+      - redis_password
+    restart: unless-stopped
     networks:
       - inception
+
+  redis:
+    container_name: redis
+    build: ./requirements/bonus/redis
+    ports:
+      - 6379:6379
+    secrets:
+      - redis_password
+    restart: unless-stopped
+    networks:
+      - inception
+
+  adminer:
+    container_name: adminer
+    build: ./requirements/bonus/adminer
+    depends_on:
+      - mariadb
+    expose:
+      - "8080"
+    networks:
+      - inception
+    restart: unless-stopped
 
 secrets:
   db_password:
@@ -70,6 +94,8 @@ secrets:
     file: ../secrets/wp_password.txt
   wp_admin_password:
     file: ../secrets/wp_admin_password.txt
+  redis_password:
+    file: ../secrets/redis_password.txt
 
 networks:
   inception:
