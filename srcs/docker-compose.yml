@@ -5,13 +5,13 @@ volumes:
     driver: local
     driver_opts: 
       type: none
-      device: /Users/macbookpro/inception/inception/wordpress_data
+      device: /Users/macbookpro/Desktop/inception/wordpress_data
       o: bind
   mariadb_data:
     driver: local
     driver_opts: 
       type: none
-      device: /Users/macbookpro/inception/inception/mariadb_data
+      device: /Users/macbookpro/Desktop/inception/mariadb_data
       o: bind
 
 services:
@@ -84,6 +84,23 @@ services:
     networks:
       - inception
     restart: unless-stopped
+  
+  ftp:
+    container_name: ftp
+    build: ./requirements/bonus/ftp
+    env_file:
+      - .env
+    ports:
+      - 21:21
+      - 30000-30009:30000-30009
+    volumes:
+      - wordpress_data:/var/www/html
+    secrets:
+      - wp_password
+      - ftp_password
+    restart: unless-stopped
+    networks:
+      - inception
 
 secrets:
   db_password:
@@ -96,6 +113,8 @@ secrets:
     file: ../secrets/wp_admin_password.txt
   redis_password:
     file: ../secrets/redis_password.txt
+  ftp_password:
+    file: ../secrets/ftp_password.txt
 
 networks:
   inception:

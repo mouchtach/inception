@@ -12,7 +12,7 @@ down :
 stop : 
 	@docker-compose -f ./srcs/docker-compose.yml stop
 
-restart : down up
+restart : clean down up
 	
 build : 
 	@docker-compose -f ./srcs/docker-compose.yml build

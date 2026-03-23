@@ -36,8 +36,8 @@ if ! wp core is-installed --allow-root; then
         --admin_email="$WP_ADMIN_EMAIL" \
         --skip-email \
         --allow-root
-    wp theme install oceanwp --activate --allow-root
 fi
+
 
 if [ -n "${WP_USR:-}" ] && [ -n "${WP_EMAIL:-}" ] && [ -n "${WP_PWD:-}" ]; then
     if ! wp user get "$WP_USR" --field=user_login --allow-root >/dev/null 2>&1; then
