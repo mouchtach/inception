@@ -5,13 +5,19 @@ volumes:
     driver: local
     driver_opts: 
       type: none
-      device: /Users/macbookpro/Desktop/inception/wordpress_data
+      device: /Users/youssef/inception/wordpress_data
       o: bind
   mariadb_data:
     driver: local
     driver_opts: 
       type: none
-      device: /Users/macbookpro/Desktop/inception/mariadb_data
+      device: /Users/youssef/inception/mariadb_data
+      o: bind
+  portainer_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /Users/youssef/inception/portainer_data
       o: bind
 
 services:
@@ -101,6 +107,17 @@ services:
     restart: unless-stopped
     networks:
       - inception
+  portainer:
+    container_name: portainer
+    build: ./requirements/bonus/portainer
+    ports:
+      - 9443:9443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    networks:
+      - inception
+    restart: unless-stopped
 
 secrets:
   db_password:

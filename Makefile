@@ -2,8 +2,9 @@
 all : up
 
 up : 
-	@mkdir -p ./wordpress_data
+	@mkdir -p ./wordpress_data 
 	@mkdir -p ./mariadb_data
+	@mkdir -p ./portainer_data
 	@docker-compose -f ./srcs/docker-compose.yml up 
 
 down : 
@@ -22,6 +23,7 @@ start :
 
 clean : 
 	@rm -rf ./wordpress_data
+	@rm -rf ./portainer_data
 	@rm -rf ./mariadb_data
 
 status : 
