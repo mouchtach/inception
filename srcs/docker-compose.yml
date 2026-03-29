@@ -5,19 +5,19 @@ volumes:
     driver: local
     driver_opts: 
       type: none
-      device: /Users/youssef/inception/wordpress_data
+      device: ${PWD}/wordpress_data
       o: bind
   mariadb_data:
     driver: local
     driver_opts: 
       type: none
-      device: /Users/youssef/inception/mariadb_data
+      device: ${PWD}/mariadb_data
       o: bind
   portainer_data:
     driver: local
     driver_opts:
       type: none
-      device: /Users/youssef/inception/portainer_data
+      device: ${PWD}/portainer_data
       o: bind
 
 services:
@@ -116,6 +116,14 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
+    networks:
+      - inception
+    restart: unless-stopped
+  static_website:
+    container_name: static_website
+    build: ./requirements/bonus/static_website
+    ports:
+      - 40:2000
     networks:
       - inception
     restart: unless-stopped

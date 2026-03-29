@@ -501,7 +501,7 @@
     <div class="badge">42 School · System Administration</div>
     <h1>
       INCEPTION
-      <span>DOCKER INFRA</span>
+      <span>DOCKER</span>
     </h1>
     <p class="hero-sub">
       A fully orchestrated multi-container infrastructure built from scratch —
@@ -532,7 +532,7 @@
     <div class="stats-panel-title">// Stack overview</div>
     <div class="stat-row">
       <span class="stat-lbl">Base Image</span>
-      <span class="stat-val">Alpine 3.19</span>
+      <span class="stat-val">debian:bullseye</span>
     </div>
     <div class="stat-row">
       <span class="stat-lbl">Orchestration</span>
@@ -552,7 +552,7 @@
     </div>
     <div class="stat-row">
       <span class="stat-lbl">Static Site</span>
-      <span class="stat-val purple">:5000</span>
+      <span class="stat-val purple">:40</span>
     </div>
     <div class="stat-row">
       <span class="stat-lbl">Volumes</span>
@@ -657,7 +657,7 @@
           <div class="svc-name">Static Website <code style="font-size:10px;margin-left:0.5rem;">← you are here</code></div>
           <div class="svc-desc">This page. A self-contained Nginx container serving a static HTML overview of the entire Inception infrastructure. No PHP, no database — pure HTML/CSS served on port 5000.</div>
         </div>
-        <span class="svc-port here">:5000 · bonus</span>
+        <span class="svc-port here">:40 · bonus</span>
       </div>
     </div>
   </section>
@@ -691,7 +691,7 @@
         <div class="arch-node purple">FTP :21</div>
         <div class="arch-node purple">Adminer :8080</div>
         <div class="arch-node purple">Portainer :9443</div>
-        <div class="arch-node here">Static Site :5000</div>
+        <div class="arch-node here">Static Site :40</div>
       </div>
     </div>
   </section>
@@ -727,7 +727,7 @@
 
   <span class="key">static</span>:
     build: ./requirements/bonus/static
-    ports: [ <span class="str">"5000:5000"</span> ]
+    ports: [ <span class="str">"40:2000"</span> ]
     networks: [ inception ]
     restart: unless-stopped
 

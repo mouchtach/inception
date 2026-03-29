@@ -1,30 +1,30 @@
+COMPOSE := docker-compose -f ./srcs/docker-compose.yml
+DATA_DIRS := ./wordpress_data ./mariadb_data ./portainer_data
 
-all : up
+all: up
 
-up : 
-	@mkdir -p ./wordpress_data 
-	@mkdir -p ./mariadb_data
-	@mkdir -p ./portainer_data
-	@docker-compose -f ./srcs/docker-compose.yml up 
+up:
+	@mkdir -p $(DATA_DIRS)
+	@$(COMPOSE) up -d 
 
-down :
-	@docker-compose -f ./srcs/docker-compose.yml down  --volumes
+down:
+	@$(COMPOSE) down --volumes 
 
-stop : 
-	@docker-compose -f ./srcs/docker-compose.yml stop
+stop:
+	@$(COMPOSE) stop 
 
-restart : clean down up
+restart: clean down up
 	
-build :
-	@docker-compose -f ./srcs/docker-compose.yml build
+build:
+	@$(COMPOSE) build 
 	
-start : 
-	@docker-compose -f ./srcs/docker-compose.yml start
+start:
+	@$(COMPOSE) start 
 
-clean : 
-	@rm -rf ./wordpress_data
-	@rm -rf ./portainer_data
-	@rm -rf ./mariadb_data
+clean:
+	@rm -rf $(DATA_DIRS)
 
-status : 
+status:
 	@docker ps
+
+.PHONY: all up down stop restart build start clean status 
