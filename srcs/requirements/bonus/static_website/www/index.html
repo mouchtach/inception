@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inception — ymouchta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #0a0a0f;
+    --surface: #111118;
+    --surface2:#1a1a24;
+    --border:  #2a2a3a;
+    --accent:  #00e5ff;
+    --accent2: #7c3aed;
+    --accent3: #f59e0b;
+    --text:    #e2e8f0;
+    --muted:   #64748b;
+    --green:   #22d3ee;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* SCANLINES */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent, transparent 2px,
+      rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    height: 56px;
+  }
+
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+  }
+
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--accent); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 4rem;
+    align-items: center;
+    padding: 7rem 3rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 60px 60px;
+    opacity: 0.3;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+  }
+
+  .hero-glow {
+    position: absolute;
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(0,229,255,0.07) 0%, transparent 70%);
+    top: 50%; left: 40%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .hero-left { position: relative; z-index: 1; }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(0,229,255,0.08);
+    border: 1px solid rgba(0,229,255,0.25);
+    color: var(--accent);
+    padding: 0.35rem 0.9rem;
+    border-radius: 2px;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: blink 2s ease infinite;
+  }
+
+  @keyframes blink {
+    0%,100% { opacity:1; transform:scale(1); }
+    50%      { opacity:0.3; transform:scale(0.7); }
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(3.5rem, 8vw, 6.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.4rem;
+    animation: fadeUp 0.6s ease 0.1s both;
+    color: var(--text);
+  }
+
+  h1 span {
+    display: block;
+    -webkit-text-stroke: 1px var(--accent);
+    color: transparent;
+  }
+
+  .hero-sub {
+    font-size: 13px;
+    color: var(--muted);
+    max-width: 480px;
+    margin: 1.5rem 0 2.5rem;
+    border-left: 2px solid var(--accent2);
+    padding-left: 1rem;
+    line-height: 1.9;
+    animation: fadeUp 0.6s ease 0.2s both;
+  }
+
+  .hero-meta {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    animation: fadeUp 0.6s ease 0.3s both;
+  }
+
+  .meta-item { display: flex; flex-direction: column; gap: 0.2rem; }
+  .meta-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.15em; }
+  .meta-value { font-size: 13px; color: var(--accent); }
+
+  /* STATS PANEL */
+  .stats-panel {
+    position: relative; z-index: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.5rem;
+    animation: fadeUp 0.6s ease 0.35s both;
+  }
+
+  .stats-panel-title {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid rgba(42,42,58,0.6);
+  }
+  .stat-row:last-child { border-bottom: none; }
+  .stat-lbl { font-size: 11px; color: var(--muted); }
+  .stat-val { font-size: 12px; color: var(--accent); font-weight: 700; }
+  .stat-val.purple { color: #a78bfa; }
+  .stat-val.amber  { color: var(--accent3); }
+
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(20px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  /* MARQUEE */
+  .marquee-wrap {
+    overflow: hidden;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    padding: 0.65rem 0;
+  }
+
+  .marquee-track {
+    display: flex;
+    gap: 2.5rem;
+    animation: marquee 22s linear infinite;
+    white-space: nowrap;
+  }
+
+  .marquee-track span {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+
+  .marquee-track span.hi { color: var(--accent); }
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* MAIN */
+  main { max-width: 960px; margin: 0 auto; padding: 2rem; }
+
+  section {
+    margin-bottom: 5rem;
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  section.visible { opacity: 1; transform: none; }
+
+  .section-label {
+    font-size: 10px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .section-label::after {
+    content: '';
+    width: 50px; height: 1px;
+    background: var(--accent);
+    opacity: 0.4;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    margin-bottom: 1.5rem;
+    color: var(--text);
+  }
+
+  p { color: var(--muted); margin-bottom: 1rem; line-height: 1.8; }
+  p strong { color: var(--text); }
+
+  /* SERVICE LIST */
+  .service-list { display: grid; gap: 0; }
+
+  .service-item {
+    display: grid;
+    grid-template-columns: 44px 1fr auto;
+    align-items: start;
+    gap: 1.5rem;
+    padding: 1.5rem 0.75rem;
+    border-top: 1px solid var(--border);
+    transition: background 0.2s;
+  }
+
+  .service-item:hover { background: rgba(0,229,255,0.03); }
+  .service-item:hover .svc-num { color: var(--accent); }
+
+  .svc-num {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.6rem;
+    color: var(--border);
+    line-height: 1;
+    padding-top: 0.2rem;
+    transition: color 0.2s;
+  }
+
+  .svc-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+  }
+
+  .svc-desc { font-size: 12px; color: var(--muted); line-height: 1.75; max-width: 520px; }
+
+  .svc-port {
+    font-size: 11px;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 0.3rem 0.75rem;
+    border-radius: 2px;
+    white-space: nowrap;
+    align-self: start;
+    margin-top: 0.15rem;
+  }
+
+  .svc-port.bonus {
+    border-color: rgba(0,229,255,0.25);
+    color: var(--accent);
+    background: rgba(0,229,255,0.05);
+  }
+
+  .svc-port.here {
+    border-color: rgba(124,58,237,0.5);
+    color: #a78bfa;
+    background: rgba(124,58,237,0.08);
+    animation: glow 2s ease infinite;
+  }
+
+  @keyframes glow {
+    0%,100% { box-shadow: none; }
+    50%      { box-shadow: 0 0 12px rgba(124,58,237,0.35); }
+  }
+
+  /* ARCH DIAGRAM */
+  .arch-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2rem;
+    margin: 2rem 0;
+    position: relative;
+  }
+
+  .arch-wrap::before {
+    content: '// NETWORK: inception (bridge)';
+    position: absolute;
+    top: 0.75rem; right: 1rem;
+    font-size: 10px; color: var(--muted); letter-spacing: 0.08em;
+  }
+
+  .arch-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .arch-node {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 0.6rem 1.1rem;
+    border-radius: 2px;
+    font-size: 11px;
+    text-align: center;
+    min-width: 100px;
+    transition: all 0.2s;
+  }
+
+  .arch-node:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0,229,255,0.1); }
+  .arch-node.cyan   { border-color: rgba(0,229,255,0.35);   color: var(--accent); }
+  .arch-node.amber  { border-color: rgba(245,158,11,0.35);  color: var(--accent3); }
+  .arch-node.purple { border-color: rgba(124,58,237,0.35);  color: #a78bfa; }
+  .arch-node.green  { border-color: rgba(34,211,238,0.35);  color: var(--green); }
+  .arch-node.here   { border-color: rgba(124,58,237,0.5); color: #a78bfa; animation: glow 2s ease infinite; }
+
+  .arch-arrow   { color: var(--muted); font-size: 12px; }
+  .arch-divider { height: 1px; background: var(--border); margin: 1rem 0; }
+  .arch-sub-lbl { font-size: 10px; color: var(--muted); text-align: center; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.75rem; }
+
+  /* CODE BLOCK */
+  .code-block {
+    background: #0d0d14;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.5rem;
+    margin: 1.25rem 0;
+    overflow-x: auto;
+    position: relative;
+  }
+
+  .code-block::before {
+    content: attr(data-lang);
+    position: absolute;
+    top: 0.5rem; right: 0.75rem;
+    font-size: 9px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase;
+  }
+
+  .code-block pre {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px; color: var(--text);
+    white-space: pre; line-height: 1.75;
+  }
+
+  .code-block .cmd     { color: var(--accent); }
+  .code-block .comment { color: var(--muted); }
+  .code-block .str     { color: var(--accent3); }
+  .code-block .key     { color: #a78bfa; }
+
+  code {
+    background: rgba(0,229,255,0.08);
+    color: var(--accent);
+    padding: 0.1em 0.4em;
+    border-radius: 2px;
+    font-size: 0.9em;
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+  }
+
+  footer a { color: var(--accent); text-decoration: none; }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  @media (max-width: 720px) {
+    .hero { grid-template-columns: 1fr; padding: 6rem 1.5rem 3rem; }
+    .stats-panel { display: none; }
+    .nav-links { display: none; }
+    .service-item { grid-template-columns: 36px 1fr; }
+    .svc-port { display: none; }
+    footer { flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">INCEPTION</div>
+  <ul class="nav-links">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#architecture">Architecture</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="https://ymouchta.42.fr" target="_blank">↗ Live Site</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+
+  <div class="hero-left">
+    <div class="badge">42 School · System Administration</div>
+    <h1>
+      INCEPTION
+      <span>DOCKER INFRA</span>
+    </h1>
+    <p class="hero-sub">
+      A fully orchestrated multi-container infrastructure built from scratch —
+      NGINX, WordPress, MariaDB, Redis, FTP, Adminer and Portainer,
+      all speaking over a private Docker network. TLS only. No shortcuts.
+    </p>
+    <div class="hero-meta">
+      <div class="meta-item">
+        <span class="meta-label">Author</span>
+        <span class="meta-value">ymouchta</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Domain</span>
+        <span class="meta-value">ymouchta.42.fr</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Services</span>
+        <span class="meta-value">8 containers</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Protocol</span>
+        <span class="meta-value">HTTPS / TLS</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-panel">
+    <div class="stats-panel-title">// Stack overview</div>
+    <div class="stat-row">
+      <span class="stat-lbl">Base Image</span>
+      <span class="stat-val">Alpine 3.19</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-lbl">Orchestration</span>
+      <span class="stat-val">Docker Compose</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-lbl">Network</span>
+      <span class="stat-val">Bridge</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-lbl">Secrets</span>
+      <span class="stat-val purple">Docker Secrets</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-lbl">TLS Port</span>
+      <span class="stat-val">:443</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-lbl">Static Site</span>
+      <span class="stat-val purple">:5000</span>
+    </div>
+    <div class="stat-row">
+      <span class="stat-lbl">Volumes</span>
+      <span class="stat-val amber">3 named</span>
+    </div>
+  </div>
+</div>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span class="hi">DOCKER</span><span>·</span>
+    <span>NGINX</span><span>·</span>
+    <span class="hi">WORDPRESS</span><span>·</span>
+    <span>MARIADB</span><span>·</span>
+    <span class="hi">REDIS</span><span>·</span>
+    <span>ALPINE LINUX</span><span>·</span>
+    <span class="hi">TLS / HTTPS</span><span>·</span>
+    <span>DOCKER SECRETS</span><span>·</span>
+    <span class="hi">PORTAINER</span><span>·</span>
+    <span>FTP · ADMINER</span><span>·</span>
+    <span class="hi">DOCKER</span><span>·</span>
+    <span>NGINX</span><span>·</span>
+    <span class="hi">WORDPRESS</span><span>·</span>
+    <span>MARIADB</span><span>·</span>
+    <span class="hi">REDIS</span><span>·</span>
+    <span>ALPINE LINUX</span><span>·</span>
+    <span class="hi">TLS / HTTPS</span><span>·</span>
+    <span>DOCKER SECRETS</span><span>·</span>
+    <span class="hi">PORTAINER</span><span>·</span>
+    <span>FTP · ADMINER</span><span>·</span>
+  </div>
+</div>
+
+<main>
+
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="section-label">01 — Services</div>
+    <h2 class="section-title">Every container, its purpose.</h2>
+
+    <div class="service-list">
+      <div class="service-item">
+        <div class="svc-num">01</div>
+        <div>
+          <div class="svc-name">NGINX</div>
+          <div class="svc-desc">The sole public entry point. Handles TLS termination with a self-signed certificate and proxies all traffic — WordPress via FastCGI, Adminer via HTTP proxy. Nothing reaches the stack without going through here.</div>
+        </div>
+        <span class="svc-port">:443</span>
+      </div>
+      <div class="service-item">
+        <div class="svc-num">02</div>
+        <div>
+          <div class="svc-name">WordPress + PHP-FPM</div>
+          <div class="svc-desc">The main application. Installed and configured automatically via WP-CLI at startup. Creates an admin user and a regular user, connects to MariaDB, and enables the Redis object cache plugin.</div>
+        </div>
+        <span class="svc-port">:9000 (internal)</span>
+      </div>
+      <div class="service-item">
+        <div class="svc-num">03</div>
+        <div>
+          <div class="svc-name">MariaDB</div>
+          <div class="svc-desc">The relational database layer. Initialised by a shell script that creates the database, user, and sets root password — all sourced from Docker Secrets. Data persists in a named volume.</div>
+        </div>
+        <span class="svc-port">:3306 (internal)</span>
+      </div>
+      <div class="service-item">
+        <div class="svc-num">04</div>
+        <div>
+          <div class="svc-name">Redis</div>
+          <div class="svc-desc">In-memory object cache wired to WordPress. Reduces redundant database queries and speeds up page generation. Password-protected via Docker Secrets and configured through a custom redis.conf.</div>
+        </div>
+        <span class="svc-port bonus">:6379 · bonus</span>
+      </div>
+      <div class="service-item">
+        <div class="svc-num">05</div>
+        <div>
+          <div class="svc-name">FTP Server (vsftpd)</div>
+          <div class="svc-desc">Provides FTP access to the WordPress volume. Useful for direct file management and uploads. Operates in passive mode with a defined port range (30000–30009) and dedicated FTP user credentials.</div>
+        </div>
+        <span class="svc-port bonus">:21 · bonus</span>
+      </div>
+      <div class="service-item">
+        <div class="svc-num">06</div>
+        <div>
+          <div class="svc-name">Adminer</div>
+          <div class="svc-desc">Lightweight single-file PHP database manager served via NGINX proxy. Provides a clean web UI for browsing and managing the MariaDB database without needing a CLI.</div>
+        </div>
+        <span class="svc-port bonus">:8080 (proxied) · bonus</span>
+      </div>
+      <div class="service-item">
+        <div class="svc-num">07</div>
+        <div>
+          <div class="svc-name">Portainer</div>
+          <div class="svc-desc">A full Docker management dashboard. Mounts the Docker socket directly to give real-time visibility into all containers, volumes, networks, and images running in the stack.</div>
+        </div>
+        <span class="svc-port bonus">:9443 · bonus</span>
+      </div>
+      <div class="service-item">
+        <div class="svc-num">08</div>
+        <div>
+          <div class="svc-name">Static Website <code style="font-size:10px;margin-left:0.5rem;">← you are here</code></div>
+          <div class="svc-desc">This page. A self-contained Nginx container serving a static HTML overview of the entire Inception infrastructure. No PHP, no database — pure HTML/CSS served on port 5000.</div>
+        </div>
+        <span class="svc-port here">:5000 · bonus</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ARCHITECTURE -->
+  <section id="architecture">
+    <div class="section-label">02 — Architecture</div>
+    <h2 class="section-title">How it all connects.</h2>
+
+    <div class="arch-wrap">
+      <div class="arch-sub-lbl">Internet / Browser</div>
+      <div class="arch-row">
+        <div class="arch-node cyan">Client :443</div>
+      </div>
+      <div class="arch-row"><span class="arch-arrow">↓ HTTPS / TLS</span></div>
+      <div class="arch-row">
+        <div class="arch-node cyan">NGINX</div>
+      </div>
+      <div class="arch-row"><span class="arch-arrow">↓ FastCGI :9000</span></div>
+      <div class="arch-row">
+        <div class="arch-node green">WordPress + PHP-FPM</div>
+      </div>
+      <div class="arch-row"><span class="arch-arrow">↓ TCP :3306</span></div>
+      <div class="arch-row">
+        <div class="arch-node amber">MariaDB</div>
+      </div>
+      <div class="arch-divider"></div>
+      <div class="arch-sub-lbl">Bonus services — inception bridge network</div>
+      <div class="arch-row" style="gap:1rem;flex-wrap:wrap;">
+        <div class="arch-node purple">Redis :6379</div>
+        <div class="arch-node purple">FTP :21</div>
+        <div class="arch-node purple">Adminer :8080</div>
+        <div class="arch-node purple">Portainer :9443</div>
+        <div class="arch-node here">Static Site :5000</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="section-label">03 — About</div>
+    <h2 class="section-title">Infrastructure from scratch.</h2>
+
+    <p>
+      <strong>Inception</strong> is a 42 school project that requires building a complete web infrastructure using <strong>Docker Compose</strong> — no pre-built images from Docker Hub, no shortcuts. Every service is compiled from a custom <code>Dockerfile</code> based on <strong>Alpine Linux</strong>.
+    </p>
+    <p>
+      The constraint forces a deep understanding of how each service actually works: how NGINX speaks FastCGI, how WordPress bootstraps itself, how MariaDB initialises its grant tables, and how secrets flow securely into containers without touching environment variables.
+    </p>
+    <p>
+      All services share a single <strong>bridge network</strong> named <code>inception</code>, communicate by container name, and only expose the minimum ports required to the host. Sensitive credentials are handled exclusively via <strong>Docker Secrets</strong>.
+    </p>
+
+    <div class="code-block" data-lang="docker-compose">
+<pre><span class="comment"># docker-compose.yml — excerpt</span>
+
+<span class="key">services</span>:
+  <span class="key">nginx</span>:
+    build: ./requirements/nginx
+    ports: [ <span class="str">"443:443"</span> ]
+    networks: [ inception ]
+
+  <span class="key">wordpress</span>:
+    build: ./requirements/wordpress
+    expose: [ <span class="str">"9000"</span> ]
+    secrets: [ db_password, wp_password ]
+
+  <span class="key">static</span>:
+    build: ./requirements/bonus/static
+    ports: [ <span class="str">"5000:5000"</span> ]
+    networks: [ inception ]
+    restart: unless-stopped
+
+<span class="key">networks</span>:
+  <span class="key">inception</span>:
+    driver: <span class="str">bridge</span></pre>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <span class="footer-logo">INCEPTION</span>
+  <span>42 School curriculum — ymouchta &lt;ymouchta@student.42.fr&gt;</span>
+  <span>Static Website · Bonus Service · <a href="https://ymouchta.42.fr" target="_blank">ymouchta.42.fr</a></span>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('section').forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>

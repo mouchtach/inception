@@ -29,6 +29,7 @@ services:
       - adminer
     ports:
       - 443:443
+      - 2000:5000
     volumes:
       - wordpress_data:/var/www/html
     restart: unless-stopped

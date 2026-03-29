@@ -7,15 +7,15 @@ up :
 	@mkdir -p ./portainer_data
 	@docker-compose -f ./srcs/docker-compose.yml up 
 
-down : 
-	@docker-compose -f ./srcs/docker-compose.yml down
+down :
+	@docker-compose -f ./srcs/docker-compose.yml down  --volumes
 
 stop : 
 	@docker-compose -f ./srcs/docker-compose.yml stop
 
 restart : clean down up
 	
-build : 
+build :
 	@docker-compose -f ./srcs/docker-compose.yml build
 	
 start : 

@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inception — ymouchta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --ink:   #0f0e0c;
+  --paper: #f5f0e8;
+  --warm:  #e8dfc8;
+  --rust:  #c94a1e;
+  --gold:  #c9961e;
+  --muted: #7a7060;
+  --line:  #d5cdb8;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  cursor: none;
+}
+
+/* CUSTOM CURSOR */
+.cursor {
+  width: 10px; height: 10px;
+  background: var(--rust);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s, width 0.2s, height 0.2s;
+  mix-blend-mode: multiply;
+}
+
+.cursor.big { width: 40px; height: 40px; opacity: 0.4; }
+
+/* NOISE TEXTURE */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 500;
+  opacity: 0.6;
+}
+
+/* ── HEADER ── */
+header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: start;
+  padding: 2rem 3rem 0;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 1.5rem;
+}
+
+.header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.header-tag {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+}
+
+.header-author {
+  font-size: 11px;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.header-right {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.header-right a {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.header-right a:hover { color: var(--rust); }
+
+/* ── HERO ── */
+.hero {
+  padding: 4rem 3rem 3rem;
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 4rem;
+  align-items: end;
+  border-bottom: 1px solid var(--line);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-bg-text {
+  position: absolute;
+  bottom: -2rem; right: -2rem;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28vw;
+  color: var(--warm);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+
+.hero-left { position: relative; z-index: 1; }
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--rust);
+  margin-bottom: 1.5rem;
+  animation: slideIn 0.7s ease both;
+}
+
+.eyebrow::before {
+  content: '';
+  display: block;
+  width: 24px; height: 1px;
+  background: var(--rust);
+}
+
+h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(5rem, 12vw, 10rem);
+  line-height: 0.88;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  animation: slideIn 0.7s ease 0.1s both;
+}
+
+h1 em {
+  display: block;
+  font-family: 'DM Serif Display', serif;
+  font-style: italic;
+  color: var(--rust);
+  font-size: 0.55em;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+.hero-tagline {
+  margin-top: 2rem;
+  font-size: 13px;
+  color: var(--muted);
+  max-width: 400px;
+  line-height: 1.8;
+  animation: slideIn 0.7s ease 0.2s both;
+}
+
+.hero-right {
+  position: relative;
+  z-index: 1;
+  animation: slideIn 0.7s ease 0.3s both;
+}
+
+.stats-box {
+  border: 1px solid var(--line);
+  padding: 2rem;
+  background: var(--warm);
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.stat-row:last-child { border-bottom: none; }
+
+.stat-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+}
+
+.stat-value {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  color: var(--ink);
+  letter-spacing: 0.05em;
+}
+
+.stat-value.rust { color: var(--rust); }
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── MARQUEE ── */
+.marquee-wrap {
+  overflow: hidden;
+  border-bottom: 1px solid var(--line);
+  border-top: 1px solid var(--line);
+  background: var(--ink);
+  padding: 0.75rem 0;
+}
+
+.marquee-track {
+  display: flex;
+  gap: 3rem;
+  animation: marquee 20s linear infinite;
+  white-space: nowrap;
+}
+
+.marquee-track span {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.2em;
+  color: var(--paper);
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+.marquee-track span.accent { color: var(--rust); opacity: 1; }
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* ── SERVICES SECTION ── */
+.section {
+  padding: 4rem 3rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 3rem;
+}
+
+.section-num {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.section-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 400;
+  color: var(--ink);
+  line-height: 1.1;
+}
+
+.section-title em { font-style: italic; color: var(--rust); }
+
+/* SERVICE LIST */
+.service-list {
+  display: grid;
+  gap: 0;
+}
+
+.service-item {
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  align-items: start;
+  gap: 1.5rem;
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--line);
+  position: relative;
+  transition: background 0.2s;
+  cursor: default;
+}
+
+.service-item:hover { background: rgba(201,74,30,0.03); }
+
+.service-item:hover .service-num { color: var(--rust); }
+
+.service-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2rem;
+  color: var(--warm);
+  line-height: 1;
+  transition: color 0.2s;
+  padding-top: 0.2rem;
+}
+
+.service-body {}
+
+.service-name {
+  font-family: 'DM Serif Display', serif;
+  font-size: 1.3rem;
+  color: var(--ink);
+  margin-bottom: 0.4rem;
+}
+
+.service-desc {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.7;
+  max-width: 500px;
+}
+
+.service-port {
+  font-size: 11px;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  padding: 0.3rem 0.75rem;
+  border-radius: 1px;
+  white-space: nowrap;
+  align-self: start;
+}
+
+.service-port.is-bonus {
+  border-color: rgba(201,74,30,0.3);
+  color: var(--rust);
+  background: rgba(201,74,30,0.05);
+}
+
+/* ── ARCHITECTURE SECTION ── */
+.arch-section {
+  padding: 4rem 3rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.arch-section .section-title { color: var(--paper); }
+.arch-section .section-title em { color: var(--gold); }
+.arch-section .section-num { color: var(--muted); }
+
+.arch-flow {
+  margin-top: 3rem;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+}
+
+.arch-node {
+  background: #1a1814;
+  border: 1px solid #2e2c28;
+  padding: 1.25rem 1.5rem;
+  min-width: 120px;
+  text-align: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.arch-node:hover {
+  border-color: var(--rust);
+  background: #221e19;
+}
+
+.arch-node-icon { font-size: 1.4rem; margin-bottom: 0.5rem; }
+.arch-node-name {
+  font-family: 'DM Serif Display', serif;
+  font-size: 0.95rem;
+  color: var(--paper);
+  margin-bottom: 0.25rem;
+}
+
+.arch-node-port {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+}
+
+.arch-node.highlight { border-color: var(--rust); }
+.arch-node.highlight .arch-node-name { color: var(--rust); }
+
+.arch-arr {
+  color: #3a3830;
+  font-size: 1.2rem;
+  padding: 0 0.5rem;
+  flex-shrink: 0;
+}
+
+.arch-bonus-wrap {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.arch-bonus-node {
+  background: #1a1814;
+  border: 1px dashed #2e2c28;
+  padding: 0.75rem 1.25rem;
+  font-size: 11px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+}
+
+.arch-bonus-node:hover { border-color: var(--gold); color: var(--gold); }
+.arch-bonus-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #3a3830;
+  margin-bottom: 0.75rem;
+}
+
+/* ── ABOUT SECTION ── */
+.about-section {
+  padding: 4rem 3rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.about-section p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.9;
+  margin-bottom: 1rem;
+}
+
+.about-section strong { color: var(--ink); }
+
+.code-snippet {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 1.5rem;
+  font-size: 11px;
+  line-height: 2;
+  border-left: 3px solid var(--rust);
+}
+
+.code-snippet .c { color: #5a5650; }
+.code-snippet .k { color: var(--gold); }
+.code-snippet .v { color: #a8c4b0; }
+
+/* ── FOOTER ── */
+footer {
+  padding: 2rem 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--ink);
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+}
+
+footer .f-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.5rem;
+  color: var(--paper);
+  letter-spacing: 0.1em;
+}
+
+footer a { color: var(--rust); text-decoration: none; }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .hero { grid-template-columns: 1fr; }
+  .hero-bg-text { font-size: 50vw; }
+  .hero-right { display: none; }
+  .about-section { grid-template-columns: 1fr; }
+  header { grid-template-columns: 1fr; gap: 1rem; }
+  .section-header { flex-direction: column; gap: 0.5rem; }
+  .service-item { grid-template-columns: 36px 1fr; }
+  .service-port { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-left">
+    <span class="header-tag">42 School · System Administration</span>
+    <span class="header-author">by ymouchta &lt;ymouchta@student.42.fr&gt;</span>
+  </div>
+  <nav class="header-right">
+    <a href="#services">Services</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#about">About</a>
+    <a href="https://ymouchta.42.fr" target="_blank">↗ Live Site</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="eyebrow">Docker Infrastructure Project</div>
+    <h1>
+      INCEPTION
+      <em>a containerized world</em>
+    </h1>
+    <p class="hero-tagline">
+      A fully orchestrated multi-container infrastructure built from scratch —
+      NGINX, WordPress, MariaDB, Redis, FTP, Adminer and Portainer,
+      all speaking over a private Docker network. TLS only. No shortcuts.
+    </p>
+  </div>
+  <div class="hero-right">
+    <div class="stats-box">
+      <div class="stat-row">
+        <span class="stat-label">Total Services</span>
+        <span class="stat-value rust">07</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Protocol</span>
+        <span class="stat-value">HTTPS</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Base Image</span>
+        <span class="stat-value">Alpine</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Network</span>
+        <span class="stat-value">Bridge</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Domain</span>
+        <span class="stat-value" style="font-size:1rem;">42.fr</span>
+      </div>
+    </div>
+  </div>
+  <div class="hero-bg-text" aria-hidden="true">INC</div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span>DOCKER</span><span class="accent">✦</span>
+    <span>NGINX</span><span class="accent">✦</span>
+    <span>WORDPRESS</span><span class="accent">✦</span>
+    <span>MARIADB</span><span class="accent">✦</span>
+    <span>REDIS</span><span class="accent">✦</span>
+    <span>ALPINE LINUX</span><span class="accent">✦</span>
+    <span>TLS / HTTPS</span><span class="accent">✦</span>
+    <span>DOCKER SECRETS</span><span class="accent">✦</span>
+    <span>PORTAINER</span><span class="accent">✦</span>
+    <span>FTP</span><span class="accent">✦</span>
+    <!-- Duplicate for seamless loop -->
+    <span>DOCKER</span><span class="accent">✦</span>
+    <span>NGINX</span><span class="accent">✦</span>
+    <span>WORDPRESS</span><span class="accent">✦</span>
+    <span>MARIADB</span><span class="accent">✦</span>
+    <span>REDIS</span><span class="accent">✦</span>
+    <span>ALPINE LINUX</span><span class="accent">✦</span>
+    <span>TLS / HTTPS</span><span class="accent">✦</span>
+    <span>DOCKER SECRETS</span><span class="accent">✦</span>
+    <span>PORTAINER</span><span class="accent">✦</span>
+    <span>FTP</span><span class="accent">✦</span>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section class="section" id="services">
+  <div class="section-header">
+    <div>
+      <div class="section-num">01 — Services</div>
+      <h2 class="section-title">Every container,<br><em>its purpose.</em></h2>
+    </div>
+  </div>
+
+  <div class="service-list">
+    <div class="service-item">
+      <div class="service-num">01</div>
+      <div class="service-body">
+        <div class="service-name">NGINX</div>
+        <div class="service-desc">The sole public entry point. Handles TLS termination with a self-signed certificate and proxies all traffic — WordPress via FastCGI, Adminer via HTTP proxy. Nothing reaches the stack without going through here.</div>
+      </div>
+      <span class="service-port">:443</span>
+    </div>
+    <div class="service-item">
+      <div class="service-num">02</div>
+      <div class="service-body">
+        <div class="service-name">WordPress + PHP-FPM</div>
+        <div class="service-desc">The main application. Installed and configured automatically via WP-CLI at startup. Creates an admin user and a regular user, connects to MariaDB, and enables the Redis object cache plugin.</div>
+      </div>
+      <span class="service-port">:9000 (internal)</span>
+    </div>
+    <div class="service-item">
+      <div class="service-num">03</div>
+      <div class="service-body">
+        <div class="service-name">MariaDB</div>
+        <div class="service-desc">The relational database layer. Initialised by a shell script that creates the database, user, and sets root password — all sourced from Docker Secrets. Data persists in a named volume.</div>
+      </div>
+      <span class="service-port">:3306 (internal)</span>
+    </div>
+    <div class="service-item">
+      <div class="service-num">04</div>
+      <div class="service-body">
+        <div class="service-name">Redis</div>
+        <div class="service-desc">In-memory object cache wired to WordPress. Reduces redundant database queries and speeds up page generation. Password-protected via Docker Secrets and configured through a custom redis.conf.</div>
+      </div>
+      <span class="service-port is-bonus">:6379 · bonus</span>
+    </div>
+    <div class="service-item">
+      <div class="service-num">05</div>
+      <div class="service-body">
+        <div class="service-name">FTP Server (vsftpd)</div>
+        <div class="service-desc">Provides FTP access to the WordPress volume. Useful for direct file management and uploads. Operates in passive mode with a defined port range (30000–30009) and dedicated FTP user credentials.</div>
+      </div>
+      <span class="service-port is-bonus">:21 · bonus</span>
+    </div>
+    <div class="service-item">
+      <div class="service-num">06</div>
+      <div class="service-body">
+        <div class="service-name">Adminer</div>
+        <div class="service-desc">Lightweight single-file PHP database manager served via NGINX proxy. Provides a clean web UI for browsing and managing the MariaDB database without needing a CLI.</div>
+      </div>
+      <span class="service-port is-bonus">:8080 (proxied) · bonus</span>
+    </div>
+    <div class="service-item">
+      <div class="service-num">07</div>
+      <div class="service-body">
+        <div class="service-name">Portainer</div>
+        <div class="service-desc">A full Docker management dashboard. Mounts the Docker socket directly to give real-time visibility into all containers, volumes, networks, and images running in the stack.</div>
+      </div>
+      <span class="service-port is-bonus">:9443 · bonus</span>
+    </div>
+    <div class="service-item">
+      <div class="service-num">08</div>
+      <div class="service-body">
+        <div class="service-name">Static Website <span style="font-size:10px;color:var(--rust);font-family:'DM Mono',monospace;margin-left:0.5rem;">← you are here</span></div>
+        <div class="service-desc">This page. A self-contained Nginx container serving a static HTML overview of the entire Inception infrastructure. No PHP, no database — pure HTML/CSS.</div>
+      </div>
+      <span class="service-port is-bonus">:5000 · bonus</span>
+    </div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section class="arch-section" id="architecture">
+  <div class="section-header">
+    <div>
+      <div class="section-num">02 — Architecture</div>
+      <h2 class="section-title">How it all <em>connects.</em></h2>
+    </div>
+  </div>
+
+  <div class="arch-flow">
+    <div class="arch-node highlight">
+      <div class="arch-node-icon">🌐</div>
+      <div class="arch-node-name">Browser</div>
+      <div class="arch-node-port">HTTPS</div>
+    </div>
+    <div class="arch-arr">→</div>
+    <div class="arch-node highlight">
+      <div class="arch-node-icon">🔒</div>
+      <div class="arch-node-name">NGINX</div>
+      <div class="arch-node-port">:443</div>
+    </div>
+    <div class="arch-arr">→</div>
+    <div class="arch-node">
+      <div class="arch-node-icon">🌐</div>
+      <div class="arch-node-name">WordPress</div>
+      <div class="arch-node-port">:9000 FastCGI</div>
+    </div>
+    <div class="arch-arr">→</div>
+    <div class="arch-node">
+      <div class="arch-node-icon">🗄️</div>
+      <div class="arch-node-name">MariaDB</div>
+      <div class="arch-node-port">:3306</div>
+    </div>
+  </div>
+
+  <div style="margin-top:2.5rem;">
+    <div class="arch-bonus-label">Bonus services — same bridge network</div>
+    <div class="arch-bonus-wrap">
+      <div class="arch-bonus-node">⚡ Redis :6379</div>
+      <div class="arch-bonus-node">📁 FTP :21</div>
+      <div class="arch-bonus-node">🛠️ Adminer :8080</div>
+      <div class="arch-bonus-node">🐳 Portainer :9443</div>
+      <div class="arch-bonus-node" style="border-color:rgba(201,74,30,0.4);color:var(--rust);">📄 Static Site :5000</div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about-section" id="about">
+  <div>
+    <div class="section-num" style="margin-bottom:1.5rem;">03 — About the project</div>
+    <h2 class="section-title" style="font-family:'DM Serif Display',serif;font-size:2rem;font-weight:400;margin-bottom:2rem;line-height:1.2;">
+      Infrastructure<br><em style="color:var(--rust);font-style:italic;">from scratch.</em>
+    </h2>
+    <p>
+      Inception is a 42 school project that requires building a complete web infrastructure using <strong>Docker Compose</strong> — no pre-built images from Docker Hub, no shortcuts. Every service is compiled from a custom <strong>Dockerfile</strong> based on Alpine Linux.
+    </p>
+    <p>
+      The constraint forces a deep understanding of how each service actually works: how NGINX speaks FastCGI, how WordPress bootstraps itself, how MariaDB initialises its grant tables, and how secrets flow securely into containers without touching environment variables.
+    </p>
+    <p>
+      All services share a single <strong>bridge network</strong> named <code style="background:var(--warm);padding:0.1em 0.4em;font-size:0.9em;">inception</code>, communicate by container name, and only expose the minimum ports required to the host.
+    </p>
+  </div>
+  <div>
+    <div class="code-snippet">
+<span class="c"># docker-compose excerpt</span>
+
+<span class="k">services</span>:
+  <span class="k">nginx</span>:
+    build: ./requirements/nginx
+    ports: [ <span class="v">"443:443"</span> ]
+    networks: [ inception ]
+
+  <span class="k">wordpress</span>:
+    build: ./requirements/wordpress
+    expose: [ <span class="v">"9000"</span> ]
+    secrets:
+      - db_password
+      - wp_password
+
+  <span class="k">static</span>:
+    build: ./requirements/bonus/static
+    ports: [ <span class="v">"5000:5000"</span> ]
+    networks: [ inception ]
+
+<span class="k">networks</span>:
+  <span class="k">inception</span>:
+    driver: <span class="v">bridge</span>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="f-logo">INCEPTION</span>
+  <span>42 School curriculum — ymouchta &lt;ymouchta@student.42.fr&gt;</span>
+  <span>Static Website Bonus Service · <a href="https://ymouchta.42.fr">ymouchta.42.fr</a></span>
+</footer>
+
+<script>
+  const cursor = document.getElementById('cursor');
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+  });
+  document.querySelectorAll('a, .service-item, .arch-node').forEach(el => {
+    el.addEventListener('mouseenter', () => cursor.classList.add('big'));
+    el.addEventListener('mouseleave', () => cursor.classList.remove('big'));
+  });
+</script>
+</body>
+</html>
