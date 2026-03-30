@@ -13,7 +13,7 @@ down:
 stop:
 	@$(COMPOSE) stop 
 
-restart: clean down up
+re: clean down up
 	
 build:
 	@$(COMPOSE) build 
