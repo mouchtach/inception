@@ -24,6 +24,9 @@ start:
 clean:
 	@rm -rf $(DATA_DIRS)
 
+logs:
+	@$(COMPOSE) logs -f
+
 status:
 	@docker ps
 
