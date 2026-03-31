@@ -66,17 +66,12 @@ Project sources are organized as follows:
 - Full cleanup (containers/images/volumes/orphans): `make fclean`
 
 ### Access
-- Website: `https://localhost`
-- WordPress admin panel: `https://localhost/wp-admin`
-- Portainer: `https://localhost:9443`
-- Static website: `http://localhost:40`
+- Website: `https://ymouchta.42.fr`
+- WordPress admin panel: `https://ymouchta.42.fr/wp-admin`
+- Portainer: `https://ymouchta.42.fr:9443`
+- Static website: `http://ymouchta.42.fr:40`
+- Adminer: `http://ymouchta.42.fr/adminer`
 
-### Quick Validation
-- HTTPS check: `curl -kI https://localhost`
-- MariaDB query:
-  `docker compose -f srcs/docker-compose.yml exec mariadb mariadb -u"${DB_USER}" -p"$(cat secrets/db_password.txt)" -e "SELECT 1;"`
-- Redis check:
-  `docker compose -f srcs/docker-compose.yml exec redis redis-cli -a "$(cat secrets/redis_password.txt)" PING`
 
 ## Resources
 
@@ -90,13 +85,8 @@ Project sources are organized as follows:
 
 ### AI Usage
 AI was used for:
-- writing and restructuring documentation files
-- clarifying command descriptions and test steps
-- refining troubleshooting wording in English
+- learning about services and how they work together
+- understanding configuration choices for each service
+- getting scripting feedback while improving startup scripts
 
-AI was not used as a substitute for local runtime checks; commands and service behavior were validated against the project environment.
 
-## Additional Documentation
-- End-user documentation: `USER_DOC.md`
-- Developer documentation: `DEV_DOC.md`
-- Service test guide: `TEST_GUIDE.md`
