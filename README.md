@@ -2,93 +2,101 @@
 
 # Inception
 
-## 📌 About the Project
+## Description
+Inception is a system administration project where a complete web stack is deployed with Docker and Docker Compose. The objective is to run isolated services that communicate correctly, persist data, and keep credentials secure.
 
-Inception is a system administration project from 42 where you learn how to use Docker by building a small web infrastructure.
+This stack includes:
+- Nginx (TLS reverse proxy)
+- WordPress (PHP-FPM)
+- MariaDB
+- Redis
+- Adminer
+- FTP server
+- Portainer
+- Static website
 
-The goal is simple: create multiple services (WordPress, database, web server, etc.) that work together inside containers using Docker Compose.
+Project sources are organized as follows:
+- `srcs/docker-compose.yml`: service orchestration
+- `srcs/requirements/`: Dockerfiles, configs, and startup scripts
+- `secrets/`: secret files mounted at runtime
+- `Makefile`: common lifecycle commands
 
-Everything is built manually using **Debian Bullseye**, without pulling ready-made images.
+### Project Design Choices
+- One process-oriented container per service for clearer separation.
+- Bridge Docker network (`inception`) for service discovery by container name.
+- Secret material stored in `secrets/*.txt` and passed as Docker secrets.
+- Persistent data stored in project data directories (`wordpress_data`, `mariadb_data`, `portainer_data`).
 
----
+### Required Comparisons
 
-## ⚙️ What’s Inside
+#### Virtual Machines vs Docker
+- Virtual Machines bundle a full guest OS, are heavier, and boot slower.
+- Docker containers share the host kernel, are lighter, and start faster.
+- This project uses Docker for reproducibility and operational simplicity.
 
-This project runs a complete website with:
+#### Secrets vs Environment Variables
+- Environment variables are easy to use but can be exposed in process output and inspect results.
+- Docker secrets are mounted as files and reduce accidental exposure of credentials.
+- This project keeps passwords in `secrets/*.txt` and reads them at runtime.
 
-- **NGINX** → handles HTTPS and acts as a reverse proxy  
-- **WordPress** → the website  
-- **MariaDB** → the database  
+#### Docker Network vs Host Network
+- Host networking removes network isolation and can increase port conflict risk.
+- Bridge networking isolates traffic and keeps clean service-to-service naming.
+- This project uses a custom bridge network for safer inter-service communication.
 
-### Bonus services:
-- **Redis** → improves WordPress performance (cache)  
-- **Adminer** → manage the database from browser  
-- **FTP** → access WordPress files  
-- **Static website** → small portfolio page  
-- **Portainer** → manage Docker containers visually  
+#### Docker Volumes vs Bind Mounts
+- Docker volumes are Docker-managed persistent storage.
+- Bind mounts map explicit host paths to containers.
+- This project persists data in repository-level host directories configured in compose.
 
----
+## Instructions
 
-## 🚀 How to Run
+### Prerequisites
+- Docker installed and running
+- Docker Compose command available (`docker-compose` used by the Makefile)
 
-### 1. Setup domain
-Add this to your `/etc/hosts`:
-127.0.0.1 ymouchta.42.fr
+### Build and Run
+1. Start stack: `make`
+2. Check running containers: `make status`
+3. Tail logs: `make logs`
 
-### 2. Add secrets
-Create files inside `secrets/` (passwords, etc.)
+### Stop and Clean
+- Stop stack: `make down`
+- Remove persisted project data: `make clean`
+- Full cleanup (containers/images/volumes/orphans): `make fclean`
 
-### 3. Start the project
-make
+### Access
+- Website: `https://localhost`
+- WordPress admin panel: `https://localhost/wp-admin`
+- Portainer: `https://localhost:9443`
+- Static website: `http://localhost:40`
 
-Other useful commands:
-make down    # stop everything
-make logs    # show logs
-make status  # show containers
+### Quick Validation
+- HTTPS check: `curl -kI https://localhost`
+- MariaDB query:
+  `docker compose -f srcs/docker-compose.yml exec mariadb mariadb -u"${DB_USER}" -p"$(cat secrets/db_password.txt)" -e "SELECT 1;"`
+- Redis check:
+  `docker compose -f srcs/docker-compose.yml exec redis redis-cli -a "$(cat secrets/redis_password.txt)" PING`
 
-Open in browser:
-https://ymouchta.42.fr
+## Resources
 
----
+### References
+- Docker docs: https://docs.docker.com/
+- Docker Compose docs: https://docs.docker.com/compose/
+- Nginx docs: https://nginx.org/en/docs/
+- MariaDB docs: https://mariadb.com/kb/en/documentation/
+- WordPress docs: https://wordpress.org/documentation/
+- Redis docs: https://redis.io/docs/
 
-## 🧠 How It Works (Simple)
+### AI Usage
+AI was used for:
+- writing and restructuring documentation files
+- clarifying command descriptions and test steps
+- refining troubleshooting wording in English
 
-- Each service runs in its **own container**
-- Containers talk through a **private Docker network**
-- Only **NGINX is exposed** to the outside
-- HTTPS is enabled using a **self-signed certificate**
-- Data is saved using **Docker volumes**
-- Passwords are stored securely using **Docker secrets**
+AI was not used as a substitute for local runtime checks; commands and service behavior were validated against the project environment.
 
----
-
-## ⚖️ Quick Concepts
-
-- **Docker vs VM**  
-  Docker is faster and lighter. VM is heavier but more isolated.
-
-- **Secrets vs .env**  
-  Secrets = safe for passwords  
-  `.env` = for normal config
-
-- **Bridge Network**  
-  Containers communicate safely using names like `mariadb`, `redis`
-
----
-
-## 📚 Resources
-
-- Docker docs  
-- NGINX, MariaDB, Redis docs  
-- WP-CLI  
-
----
-
-## 🤖 AI Usage
-
-AI was used to:
-- Help write documentation  
-- Debug some issues  
-- Explain concepts  
-
-Everything was tested and verified before use.
+## Additional Documentation
+- End-user documentation: `USER_DOC.md`
+- Developer documentation: `DEV_DOC.md`
+- Service test guide: `TEST_GUIDE.md`
