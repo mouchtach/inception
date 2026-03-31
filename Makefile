@@ -5,7 +5,7 @@ all: up
 
 up:
 	@mkdir -p $(DATA_DIRS)
-	@$(COMPOSE) up -d 
+	@$(COMPOSE) up -d --build
 
 down:
 	@$(COMPOSE) down 

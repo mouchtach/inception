@@ -21,6 +21,7 @@ volumes:
 services:
   nginx:
     container_name: nginx
+    image: nginx
     build: ./requirements/nginx
     depends_on:
       - wordpress
@@ -35,6 +36,7 @@ services:
 
   mariadb:
     container_name: mariadb
+    image: mariadb
     build: ./requirements/mariadb/.
     volumes:
       - mariadb_data:/var/lib/mysql
@@ -49,6 +51,7 @@ services:
 
   wordpress:
     container_name: wordpress
+    image: wordpress
     build: ./requirements/wordpress
     env_file:
       - .env
@@ -69,6 +72,7 @@ services:
 
   redis:
     container_name: redis
+    image: redis
     build: ./requirements/bonus/redis
     ports:
       - 6379:6379
@@ -80,6 +84,7 @@ services:
 
   adminer:
     container_name: adminer
+    image: adminer
     build: ./requirements/bonus/adminer
     depends_on:
       - mariadb
@@ -91,6 +96,7 @@ services:
   
   ftp:
     container_name: ftp
+    image: ftp
     build: ./requirements/bonus/ftp
     env_file:
       - .env
@@ -107,6 +113,7 @@ services:
       - inception
   portainer:
     container_name: portainer
+    image: portainer
     build: ./requirements/bonus/portainer
     ports:
       - 9443:9443
@@ -118,6 +125,7 @@ services:
     restart: unless-stopped
   static_website:
     container_name: static_website
+    image: static_website
     build: ./requirements/bonus/static_website
     ports:
       - 40:2000
