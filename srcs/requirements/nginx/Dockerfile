@@ -8,7 +8,5 @@ COPY ./tools/certs.sh /tmp/certs.sh
 RUN chmod +x /tmp/certs.sh
 
 COPY ./conf/default.conf /etc/nginx/sites-available/default
-COPY ./www/static/ /var/www/static/
-
 
 ENTRYPOINT ["/tmp/certs.sh"]

@@ -8,7 +8,7 @@ up:
 	@$(COMPOSE) up -d 
 
 down:
-	@$(COMPOSE) down --volumes 
+	@$(COMPOSE) down 
 
 stop:
 	@$(COMPOSE) stop 
@@ -23,6 +23,11 @@ start:
 
 clean:
 	@rm -rf $(DATA_DIRS)
+	
+fclean:
+	@rm -rf $(DATA_DIRS)
+	@$(COMPOSE) down -v --rmi all --remove-orphans
+	@docker system prune -f --volumes
 
 logs:
 	@$(COMPOSE) logs -f
